@@ -65,27 +65,12 @@ public class AssignmentWorker implements Runnable {
     try {
       Assignment assignment = gson
           .fromJson(new String(delivery.getBody(), "UTF-8"), Assignment.class);
-      LOGGER.info(String
-          .format("New assignment: %d spp for job %s", assignment.getSpp(), assignment.getJobId()));
+      LOGGER.info(String.format("New assignment: %s", assignment.getJobId()));
       final Job job = apiClient.getJob(assignment.getJobId()).get(10, TimeUnit.MINUTES);
+      LOGGER.info(String.format("%d regions", job.getRegionUrls().count()));
 
       final JsonObject[] sceneDescription = new JsonObject[1];
       LOGGER.info("Downloading scene files...");
-
-      ChunkyWrapper chunky = new EmbeddedChunkyWrapper();
-      try {
-        BinarySceneData data = chunky.generateOctree(new File("test/scene.json"), new File("test"));
-        try (FileOutputStream octree = new FileOutputStream("test/scene.octree2")) {
-          octree.write(data.getOctree());
-        }
-        if (data.getEmittergrid() != null) {
-          try (FileOutputStream emittergrid = new FileOutputStream("test/scene.emittergrid")) {
-            emittergrid.write(data.getEmittergrid());
-          }
-        }
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
 
       final File regionsPath = new File(workingDir.toFile(), "region");
       regionsPath.mkdirs();
@@ -118,7 +103,8 @@ public class AssignmentWorker implements Runnable {
           .generateOctree(new File(workingDir.toFile(), "scene.json"), workingDir.toFile(), 0);
 
       LOGGER.info("Uploading...");
-      apiClient.uploadSceneData(job.getId(), data, new TaskTracker(new ConsoleProgressListener())).get();
+      apiClient.uploadSceneData(job.getId(), data, new TaskTracker(new ConsoleProgressListener()))
+          .get();
 
       channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
       LOGGER.info("Done");
