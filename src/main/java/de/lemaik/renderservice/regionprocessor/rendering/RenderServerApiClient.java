@@ -226,10 +226,11 @@ public class RenderServerApiClient {
     MultipartBody.Builder multipartBuilder = new MultipartBody.Builder()
         .setType(MediaType.parse("multipart/form-data"))
         .addFormDataPart("octree", "scene.octree2",
-            byteBody(data.getOctree(), () -> taskTracker.task("Upload octree...")))
-        .addFormDataPart("emittergrid", "scene.emittergrid",
-            byteBody(data.getEmittergrid(), () -> taskTracker.task("Upload emittergrid...")));
-
+            byteBody(data.getOctree(), () -> taskTracker.task("Upload octree...")));
+    if (data.getEmittergrid() != null) {
+      multipartBuilder = multipartBuilder.addFormDataPart("emittergrid", "scene.emittergrid",
+          byteBody(data.getEmittergrid(), () -> taskTracker.task("Upload emittergrid...")));
+    }
 
     client.newCall(new Request.Builder()
         .url(baseUrl + "/jobs/" + id + "/files")
@@ -246,7 +247,8 @@ public class RenderServerApiClient {
             if (response.code() == 204) {
               result.complete(null);
             } else {
-              result.completeExceptionally(new IOException("The render job could not be updated " + response.message()));
+              result.completeExceptionally(
+                  new IOException("The render job could not be updated " + response.message()));
             }
             response.close();
           }
