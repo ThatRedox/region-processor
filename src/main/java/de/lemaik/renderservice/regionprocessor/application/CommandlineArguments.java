@@ -19,7 +19,6 @@
 package de.lemaik.renderservice.regionprocessor.application;
 
 import com.lexicalscope.jewel.cli.Option;
-
 import java.io.File;
 
 /**
@@ -42,21 +41,6 @@ public interface CommandlineArguments {
             description = "Number of threads per processes",
             defaultValue = "2")
     int getThreads();
-
-    @Option(longName = "chunky-xms",
-            description = "minimum memory for chunky processes, in MB",
-            defaultValue = "1024")
-    int getXms();
-
-    @Option(longName = "chunky-xmx",
-            description = "maximum memory for chunky processes, in MB",
-            defaultValue = "2048")
-    int getXmx();
-
-    @Option(longName = "texturepacks-path",
-        description = "path for texturepacks",
-        defaultToNull = true)
-    File getTexturepacksPath();
 
     @Option(longName = "job-path",
             description = "path for temporary job data",

@@ -46,10 +46,7 @@ public class Main {
     RendererSettings settings = new RendererSettings(
         arguments.getProcesses(),
         arguments.getThreads(),
-        arguments.getXms(),
-        arguments.getXmx(),
         arguments.getJobPath(),
-        arguments.getTexturepacksPath(),
         arguments.getMaxUploadRate(),
         arguments.getMasterServer(),
         arguments.getCacheDirectory(),

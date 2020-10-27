@@ -27,26 +27,20 @@ import java.util.Optional;
 public class RendererSettings {
     private Integer processes;
     private Integer threads;
-    private Integer xms;
-    private Integer xmx;
     private File jobPath;
-    private File texturepacksPath;
     private Integer maxUploadRate;
     private String masterApiUrl;
     private File cacheDirectory;
     private Long maxCacheSize;
     private String name;
 
-    public RendererSettings(Integer processes, Integer threads, Integer xms, Integer xmx,
-                            File jobPath, File texturepacksPath, Integer maxUploadRate,
+    public RendererSettings(Integer processes, Integer threads,
+                            File jobPath, Integer maxUploadRate,
                             String masterApiUrl, File cacheDirectory, Long maxCacheSize,
                             String name) {
         this.processes = processes;
         this.threads = threads;
-        this.xms = xms;
-        this.xmx = xmx;
         this.jobPath = jobPath;
-        this.texturepacksPath = texturepacksPath;
         this.maxUploadRate = maxUploadRate;
         this.masterApiUrl = masterApiUrl;
         this.cacheDirectory = cacheDirectory;
@@ -62,20 +56,8 @@ public class RendererSettings {
         return Optional.ofNullable(threads);
     }
 
-    public Optional<Integer> getXms() {
-        return Optional.ofNullable(xms);
-    }
-
-    public Optional<Integer> getXmx() {
-        return Optional.ofNullable(xmx);
-    }
-
     public Optional<File> getJobPath() {
         return Optional.ofNullable(jobPath);
-    }
-
-    public Optional<File> getTexturepacksPath() {
-        return Optional.ofNullable(texturepacksPath);
     }
 
     public Optional<Integer> getMaxUploadRate() {

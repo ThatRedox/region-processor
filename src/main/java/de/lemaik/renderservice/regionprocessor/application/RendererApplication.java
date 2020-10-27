@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 public abstract class RendererApplication {
 
   private static final int VERSION = 2;
-  private static final String TEXTURE_VERSION = "1.16.2";
   private static final Logger LOGGER = LogManager.getLogger(RendererApplication.class);
 
   private final RenderServerApiClient api;
