@@ -53,7 +53,7 @@ public abstract class RendererApplication {
         settings.getMasterApiUrl(),
         settings.getCacheDirectory()
             .orElse(Paths.get(System.getProperty("user.dir"), "rs_cache").toFile()),
-        settings.getMaxCacheSize().orElse(512L)
+        settings.getMaxCacheSize().orElse(500L) // 500 MB
     );
   }
 

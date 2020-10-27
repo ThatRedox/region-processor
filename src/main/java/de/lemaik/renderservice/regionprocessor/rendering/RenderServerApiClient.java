@@ -51,7 +51,7 @@ public class RenderServerApiClient {
   public RenderServerApiClient(String baseUrl, File cacheDirectory, long maxCacheSize) {
     this.baseUrl = baseUrl;
     client = new OkHttpClient.Builder()
-        .cache(new Cache(cacheDirectory, maxCacheSize))
+        .cache(new Cache(cacheDirectory, maxCacheSize * 1024 * 1024))
         .build();
   }
 
