@@ -27,6 +27,7 @@ public class Job {
   private String _id;
   private List<JobFile> files;
   private String texturepack;
+  private boolean cancelled;
 
   public String getId() {
     return _id;
@@ -69,6 +70,10 @@ public class Job {
 
   public String getTexturepack() {
     return texturepack;
+  }
+
+  public boolean isCancelled() {
+    return cancelled;
   }
 
   public Stream<JobFile> getRegionUrls() {

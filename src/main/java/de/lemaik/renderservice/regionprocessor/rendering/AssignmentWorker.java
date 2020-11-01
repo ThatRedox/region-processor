@@ -65,8 +65,13 @@ public class AssignmentWorker implements Runnable {
     try {
       Assignment assignment = gson
           .fromJson(new String(delivery.getBody(), "UTF-8"), Assignment.class);
-      LOGGER.info(String.format("New assignment: %s", assignment.getJobId()));
+      LOGGER.info(String.format("New assignment for job %s", assignment.getJobId()));
       final Job job = apiClient.getJob(assignment.getJobId()).get(10, TimeUnit.MINUTES);
+      if (job.isCancelled()) {
+        LOGGER.info("Job is cancelled, skipping and removing it from the queue");
+        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+        return;
+      }
       LOGGER.info(String.format("%d regions", job.getRegionUrls().count()));
 
       final JsonObject[] sceneDescription = new JsonObject[1];
