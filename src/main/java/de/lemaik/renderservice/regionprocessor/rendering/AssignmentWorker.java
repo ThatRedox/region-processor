@@ -116,10 +116,12 @@ public class AssignmentWorker implements Runnable {
     } catch (Exception e) {
       LOGGER.warn("An error occurred while processing a task", e);
 
-      try {
-        channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
-      } catch (IOException e1) {
-        LOGGER.error("Could not nack a failed task", e);
+      if (channel.isOpen()) {
+        try {
+          channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+        } catch (IOException e1) {
+          LOGGER.error("Could not nack a failed task", e);
+        }
       }
     } finally {
       FileUtil.deleteDirectory(workingDir.toFile());
