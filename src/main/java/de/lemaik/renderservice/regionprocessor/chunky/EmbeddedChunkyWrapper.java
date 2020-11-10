@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.HashSet;
 import se.llbit.chunky.renderer.RenderManager;
 import se.llbit.chunky.renderer.RenderStatus;
 import se.llbit.chunky.renderer.SnapshotControl;
@@ -96,7 +97,7 @@ public class EmbeddedChunkyWrapper implements ChunkyWrapper {
 
     sceneManager.getScene().loadChunks(new TaskTracker(ProgressListener.NONE),
         new UnlockedWorld(worldDirectory, SceneUtils.getDimension(sceneManager.getScene())),
-        sceneManager.getScene().getChunks());
+        new HashSet<>(sceneManager.getScene().getChunks()));
 
     sceneManager.getScene().saveScene(context, new TaskTracker(ProgressListener.NONE));
     return new BinarySceneData(context.getOctree(), context.getEmittergrid());
@@ -115,7 +116,7 @@ public class EmbeddedChunkyWrapper implements ChunkyWrapper {
 
     sceneManager.getScene().loadChunks(new TaskTracker(ProgressListener.NONE),
         new UnlockedWorld(worldDirectory, dimension),
-        sceneManager.getScene().getChunks());
+        new HashSet<>(sceneManager.getScene().getChunks()));
 
     sceneManager.getScene().saveScene(context, new TaskTracker(ProgressListener.NONE));
     return new BinarySceneData(context.getOctree(), context.getEmittergrid());
