@@ -21,20 +21,11 @@ package de.lemaik.renderservice.regionprocessor.chunky;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A wrapper for chunky.
  */
 public interface ChunkyWrapper {
-
-  /**
-   * Starts the wrapped chunky instance.
-   *
-   * @throws IOException if an error occures while rendering
-   */
-  CompletableFuture<byte[]> render(File texturepack, File scene, int targetSpp, int threads,
-      int cpuLoad) throws IOException, InterruptedException;
 
   /**
    * Stops the wrapped chunky instance.
