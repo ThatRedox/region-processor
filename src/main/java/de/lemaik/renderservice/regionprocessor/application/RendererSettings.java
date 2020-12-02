@@ -25,58 +25,65 @@ import java.util.Optional;
  * Settings for a {@link RendererApplication}.
  */
 public class RendererSettings {
-    private Integer processes;
-    private Integer threads;
-    private File jobPath;
-    private Integer maxUploadRate;
-    private String masterApiUrl;
-    private File cacheDirectory;
-    private Long maxCacheSize;
-    private String name;
 
-    public RendererSettings(Integer processes, Integer threads,
-                            File jobPath, Integer maxUploadRate,
-                            String masterApiUrl, File cacheDirectory, Long maxCacheSize,
-                            String name) {
-        this.processes = processes;
-        this.threads = threads;
-        this.jobPath = jobPath;
-        this.maxUploadRate = maxUploadRate;
-        this.masterApiUrl = masterApiUrl;
-        this.cacheDirectory = cacheDirectory;
-        this.maxCacheSize = maxCacheSize;
-        this.name = name;
-    }
+  private Integer processes;
+  private Integer threads;
+  private File jobPath;
+  private Integer maxUploadRate;
+  private String masterApiUrl;
+  private File cacheDirectory;
+  private Long maxCacheSize;
+  private String name;
+  private final String apiKey;
 
-    public Optional<Integer> getProcesses() {
-        return Optional.ofNullable(processes);
-    }
+  public RendererSettings(Integer processes, Integer threads,
+      File jobPath, Integer maxUploadRate,
+      String masterApiUrl, File cacheDirectory, Long maxCacheSize,
+      String name, String apiKey) {
+    this.processes = processes;
+    this.threads = threads;
+    this.jobPath = jobPath;
+    this.maxUploadRate = maxUploadRate;
+    this.masterApiUrl = masterApiUrl;
+    this.cacheDirectory = cacheDirectory;
+    this.maxCacheSize = maxCacheSize;
+    this.name = name;
+    this.apiKey = apiKey;
+  }
 
-    public Optional<Integer> getThreads() {
-        return Optional.ofNullable(threads);
-    }
+  public Optional<Integer> getProcesses() {
+    return Optional.ofNullable(processes);
+  }
 
-    public Optional<File> getJobPath() {
-        return Optional.ofNullable(jobPath);
-    }
+  public Optional<Integer> getThreads() {
+    return Optional.ofNullable(threads);
+  }
 
-    public Optional<Integer> getMaxUploadRate() {
-        return Optional.ofNullable(maxUploadRate);
-    }
+  public Optional<File> getJobPath() {
+    return Optional.ofNullable(jobPath);
+  }
 
-    public String getMasterApiUrl() {
-        return masterApiUrl;
-    }
+  public Optional<Integer> getMaxUploadRate() {
+    return Optional.ofNullable(maxUploadRate);
+  }
 
-    public Optional<File> getCacheDirectory() {
-        return Optional.ofNullable(cacheDirectory);
-    }
+  public String getMasterApiUrl() {
+    return masterApiUrl;
+  }
 
-    public Optional<Long> getMaxCacheSize() {
-        return Optional.ofNullable(maxCacheSize);
-    }
+  public Optional<File> getCacheDirectory() {
+    return Optional.ofNullable(cacheDirectory);
+  }
 
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
-    }
+  public Optional<Long> getMaxCacheSize() {
+    return Optional.ofNullable(maxCacheSize);
+  }
+
+  public Optional<String> getName() {
+    return Optional.ofNullable(name);
+  }
+
+  public String getApiKey() {
+    return apiKey;
+  }
 }

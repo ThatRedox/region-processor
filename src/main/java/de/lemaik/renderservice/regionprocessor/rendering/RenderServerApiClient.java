@@ -48,10 +48,15 @@ public class RenderServerApiClient {
   private final String baseUrl;
   private final OkHttpClient client;
 
-  public RenderServerApiClient(String baseUrl, File cacheDirectory, long maxCacheSize) {
+  public RenderServerApiClient(String baseUrl, String apiKey, File cacheDirectory,
+      long maxCacheSize) {
     this.baseUrl = baseUrl;
     client = new OkHttpClient.Builder()
         .cache(new Cache(cacheDirectory, maxCacheSize * 1024 * 1024))
+        .addInterceptor(chain -> chain.proceed(
+            chain.request().newBuilder()
+                .header("X-Api-Key", apiKey)
+                .build()))
         .build();
   }
 

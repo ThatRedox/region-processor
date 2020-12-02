@@ -18,16 +18,13 @@
 
 package de.lemaik.renderservice.regionprocessor.application;
 
-import de.lemaik.renderservice.regionprocessor.chunky.BinarySceneData;
-import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapper;
 import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapperFactory;
 import de.lemaik.renderservice.regionprocessor.chunky.EmbeddedChunkyWrapper;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderServerApiClient;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderServiceInfo;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderWorker;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -51,6 +48,7 @@ public abstract class RendererApplication {
     this.settings = settings;
     api = new RenderServerApiClient(
         settings.getMasterApiUrl(),
+        settings.getApiKey(),
         settings.getCacheDirectory()
             .orElse(Paths.get(System.getProperty("user.dir"), "rs_cache").toFile()),
         settings.getMaxCacheSize().orElse(500L) // 500 MB
@@ -84,7 +82,21 @@ public abstract class RendererApplication {
 
     chunkyWrapperFactory = EmbeddedChunkyWrapper::new;
 
-    worker = new RenderWorker(rsInfo.getRabbitMq(), getSettings().getName().orElse(null),
+    // Construct the proper queue url with username and password from the api key
+    // (username is the first 8 characters of the api key)
+    URI queueUri;
+    try {
+      URI url = new URI(rsInfo.getRabbitMq());
+      queueUri = new URI(
+          url.getScheme() + "://" + settings.getApiKey().substring(0, 8) + ":" + settings
+              .getApiKey() + "@" + url.getHost() + ":" + url.getPort() + url.getPath());
+    } catch (URISyntaxException e) {
+      LOGGER.error("Invalid queue url or api key", e);
+      System.exit(-1);
+      return;
+    }
+
+    worker = new RenderWorker(queueUri.toString(), getSettings().getName().orElse(null),
         jobDirectory, chunkyWrapperFactory, api);
     worker.start();
   }

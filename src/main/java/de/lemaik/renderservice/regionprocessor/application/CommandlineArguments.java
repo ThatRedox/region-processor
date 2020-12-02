@@ -25,49 +25,55 @@ import java.io.File;
  * Commandline arguments, parsed by {@link com.lexicalscope.jewel.cli.CliFactory}.
  */
 public interface CommandlineArguments {
-    @Option(longName = "headless",
-            description = "Run without GUI",
-            defaultValue = "false")
-    boolean getHeadless();
 
-    @Option(shortName = "p",
-            longName = "process-count",
-            description = "Number of renderer processes",
-            defaultValue = "1")
-    int getProcesses();
+  @Option(longName = "headless",
+      description = "Run without GUI",
+      defaultValue = "false")
+  boolean getHeadless();
 
-    @Option(shortName = "t",
-            longName = "thread-count",
-            description = "Number of threads per processes",
-            defaultValue = "2")
-    int getThreads();
+  @Option(shortName = "p",
+      longName = "process-count",
+      description = "Number of renderer processes",
+      defaultValue = "1")
+  int getProcesses();
 
-    @Option(longName = "job-path",
-            description = "path for temporary job data",
-            defaultToNull = true)
-    File getJobPath();
+  @Option(shortName = "t",
+      longName = "thread-count",
+      description = "Number of threads per processes",
+      defaultValue = "2")
+  int getThreads();
 
-    @Option(longName = "upload-rate",
-            description = "maximum upload rate in KB/s",
-            defaultToNull = true)
-    Integer getMaxUploadRate();
+  @Option(longName = "job-path",
+      description = "path for temporary job data",
+      defaultToNull = true)
+  File getJobPath();
 
-    @Option(longName = "master",
-            description = "URL of the master server API endpoint",
-            defaultValue = "https://api.chunkycloud.lemaik.de")
-    String getMasterServer();
+  @Option(longName = "upload-rate",
+      description = "maximum upload rate in KB/s",
+      defaultToNull = true)
+  Integer getMaxUploadRate();
 
-    @Option(longName = "cache-directory",
-            description = "cache directory for scene files",
-            defaultToNull = true)
-    File getCacheDirectory();
+  @Option(longName = "master",
+      description = "URL of the master server API endpoint",
+      defaultValue = "https://api.chunkycloud.lemaik.de")
+  String getMasterServer();
 
-    @Option(longName = "max-cache-size",
-            description = "maximum cache size, in mb",
-            defaultToNull = true)
-    Long getMaxCacheSize();
+  @Option(longName = "cache-directory",
+      description = "cache directory for scene files",
+      defaultToNull = true)
+  File getCacheDirectory();
 
-    @Option(longName = "name",
-            defaultToNull = true)
-    String getName();
+  @Option(longName = "max-cache-size",
+      description = "maximum cache size, in mb",
+      defaultToNull = true)
+  Long getMaxCacheSize();
+
+  @Option(longName = "name",
+      defaultToNull = true)
+  String getName();
+
+  @Option(longName = "api-key",
+      description = "API Key",
+      defaultToNull = true)
+  String getApiKey();
 }
