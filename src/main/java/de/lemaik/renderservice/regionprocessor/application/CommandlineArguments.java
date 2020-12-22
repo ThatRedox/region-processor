@@ -31,15 +31,9 @@ public interface CommandlineArguments {
       defaultValue = "false")
   boolean getHeadless();
 
-  @Option(shortName = "p",
-      longName = "process-count",
-      description = "Number of renderer processes",
-      defaultValue = "1")
-  int getProcesses();
-
   @Option(shortName = "t",
       longName = "thread-count",
-      description = "Number of threads per processes",
+      description = "Number of dump processing threads",
       defaultValue = "2")
   int getThreads();
 

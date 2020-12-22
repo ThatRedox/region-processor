@@ -24,19 +24,16 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import de.lemaik.renderservice.regionprocessor.chunky.BinarySceneData;
 import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapper;
-import de.lemaik.renderservice.regionprocessor.chunky.EmbeddedChunkyWrapper;
 import de.lemaik.renderservice.regionprocessor.util.FileUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import se.llbit.chunky.renderer.ConsoleProgressListener;
 import se.llbit.util.ProgressListener;
 import se.llbit.util.TaskTracker;
 
@@ -108,8 +105,7 @@ public class AssignmentWorker implements Runnable {
           .generateOctree(new File(workingDir.toFile(), "scene.json"), workingDir.toFile(), 0);
 
       LOGGER.info("Uploading...");
-      apiClient.uploadSceneData(job.getId(), data, new TaskTracker(new ConsoleProgressListener()))
-          .get();
+      apiClient.uploadSceneData(job.getId(), data, new TaskTracker(ProgressListener.NONE)).get();
 
       channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
       LOGGER.info("Done");

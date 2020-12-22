@@ -26,7 +26,6 @@ import java.util.Optional;
  */
 public class RendererSettings {
 
-  private Integer processes;
   private Integer threads;
   private File jobPath;
   private Integer maxUploadRate;
@@ -36,11 +35,10 @@ public class RendererSettings {
   private String name;
   private final String apiKey;
 
-  public RendererSettings(Integer processes, Integer threads,
+  public RendererSettings(Integer threads,
       File jobPath, Integer maxUploadRate,
       String masterApiUrl, File cacheDirectory, Long maxCacheSize,
       String name, String apiKey) {
-    this.processes = processes;
     this.threads = threads;
     this.jobPath = jobPath;
     this.maxUploadRate = maxUploadRate;
@@ -49,10 +47,6 @@ public class RendererSettings {
     this.maxCacheSize = maxCacheSize;
     this.name = name;
     this.apiKey = apiKey;
-  }
-
-  public Optional<Integer> getProcesses() {
-    return Optional.ofNullable(processes);
   }
 
   public Optional<Integer> getThreads() {

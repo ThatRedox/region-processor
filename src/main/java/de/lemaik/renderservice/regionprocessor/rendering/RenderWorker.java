@@ -43,6 +43,7 @@ public class RenderWorker extends Thread {
 
   private static final Logger LOGGER = LogManager.getLogger(RenderWorker.class);
   private final ExecutorService executorService;
+  private final int threads;
   private final Path jobDirectory;
   private final ChunkyWrapperFactory chunkyFactory;
   private final int MAX_RESTART_DELAY_SECONDS = 15 * 60; // 15 minutes
@@ -52,9 +53,10 @@ public class RenderWorker extends Thread {
   private Connection conn;
   private Channel channel;
 
-  public RenderWorker(String uri, String name, Path jobDirectory,
+  public RenderWorker(String uri, String name, int threads, Path jobDirectory,
       ChunkyWrapperFactory chunkyFactory, RenderServerApiClient apiClient) {
-    executorService = Executors.newFixedThreadPool(1);
+    executorService = Executors.newFixedThreadPool(threads);
+    this.threads = threads;
     this.jobDirectory = jobDirectory;
     this.chunkyFactory = chunkyFactory;
     this.apiClient = apiClient;
@@ -82,7 +84,7 @@ public class RenderWorker extends Thread {
         nextRestartDelaySeconds = 1;
 
         QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicQos(1, false); // only fetch <poolSize> tasks at once
+        channel.basicQos(this.threads, false);
         channel.basicConsume("rs_prepare", false, consumer);
 
         while (!interrupted() && channel.isOpen()) {

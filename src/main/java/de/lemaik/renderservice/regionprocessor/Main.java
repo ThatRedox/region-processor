@@ -45,7 +45,6 @@ public class Main {
     }
 
     RendererSettings settings = new RendererSettings(
-        arguments.getProcesses(),
         arguments.getThreads(),
         arguments.getJobPath(),
         arguments.getMaxUploadRate(),
