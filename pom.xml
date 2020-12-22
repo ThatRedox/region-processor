@@ -22,9 +22,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.wertarbyte.renderservice</groupId>
-    <artifactId>rendernode</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <groupId>de.lemaik.chunkycloud</groupId>
+    <artifactId>regionprocessor</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -37,6 +37,7 @@
         <jdk.version>1.8</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <chunky.version>2.3.0-32-g9623108f</chunky.version>
     </properties>
 
     <repositories>
@@ -50,7 +51,7 @@
         <dependency>
             <groupId>se.llbit</groupId>
             <artifactId>chunky-core</artifactId>
-            <version>2.3.0-18-g94f81238</version>
+            <version>${chunky.version}</version>
         </dependency>
         <dependency>
             <!-- dependency of chunky -->
@@ -134,11 +135,11 @@
                         <id>install-chunky</id>
                         <phase>clean</phase>
                         <configuration>
-                            <file>${basedir}/chunky.jar</file>
+                            <file>${basedir}/chunky/build/chunky-core-${chunky.version}.jar</file>
                             <repositoryLayout>default</repositoryLayout>
                             <groupId>se.llbit</groupId>
                             <artifactId>chunky-core</artifactId>
-                            <version>2.3.0-18-g94f81238</version>
+                            <version>${chunky.version}</version>
                             <packaging>jar</packaging>
                             <generatePom>true</generatePom>
                         </configuration>
