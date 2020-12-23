@@ -64,6 +64,11 @@ public class AssignmentWorker implements Runnable {
           .fromJson(new String(delivery.getBody(), "UTF-8"), Assignment.class);
       LOGGER.info(String.format("New assignment for job %s", assignment.getJobId()));
       final Job job = apiClient.getJob(assignment.getJobId()).get(10, TimeUnit.MINUTES);
+      if (job == null) {
+        LOGGER.info("Job was deleted, skipping and removing it from the queue");
+        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+        return;
+      }
       if (job.isCancelled()) {
         LOGGER.info("Job is cancelled, skipping and removing it from the queue");
         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
