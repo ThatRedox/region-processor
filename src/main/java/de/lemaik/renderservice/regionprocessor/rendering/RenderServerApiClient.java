@@ -75,15 +75,20 @@ public class RenderServerApiClient {
 
           @Override
           public void onResponse(Call call, Response response) {
-            if (response.code() == 200) {
-              try (InputStreamReader reader = new InputStreamReader(response.body().byteStream())) {
-                result.complete(gson.fromJson(reader, RenderServiceInfo.class));
-              } catch (IOException e) {
-                result.completeExceptionally(e);
+            try {
+              if (response.code() == 200) {
+                try (InputStreamReader reader = new InputStreamReader(
+                    response.body().byteStream())) {
+                  result.complete(gson.fromJson(reader, RenderServiceInfo.class));
+                } catch (IOException e) {
+                  result.completeExceptionally(e);
+                }
+              } else {
+                result.completeExceptionally(
+                    new IOException("The render service info could not be downloaded"));
               }
-            } else {
-              result.completeExceptionally(
-                  new IOException("The render service info could not be downloaded"));
+            } finally {
+              response.close();
             }
           }
         });
@@ -104,22 +109,30 @@ public class RenderServerApiClient {
 
           @Override
           public void onResponse(Call call, Response response) {
-            if (response.code() == 200) {
-              try (InputStreamReader reader = new InputStreamReader(response.body().byteStream())) {
-                result.complete(gson.fromJson(reader, Job.class));
-              } catch (IOException e) {
-                result.completeExceptionally(e);
-              }
-            } else {
-              try {
-                if (response.code() == 404 && response.body().string().contains("Job not found")) {
-                  result.complete(null);
-                } else {
-                  result.completeExceptionally(new IOException("The job could not be downloaded"));
+            try {
+              if (response.code() == 200) {
+                try (InputStreamReader reader = new InputStreamReader(
+                    response.body().byteStream())) {
+                  result.complete(gson.fromJson(reader, Job.class));
+                } catch (IOException e) {
+                  result.completeExceptionally(e);
                 }
-              } catch (IOException e) {
-                result.completeExceptionally(new IOException("The job could not be downloaded", e));
+              } else {
+                try {
+                  if (response.code() == 404 && response.body().string()
+                      .contains("Job not found")) {
+                    result.complete(null);
+                  } else {
+                    result
+                        .completeExceptionally(new IOException("The job could not be downloaded"));
+                  }
+                } catch (IOException e) {
+                  result
+                      .completeExceptionally(new IOException("The job could not be downloaded", e));
+                }
               }
+            } finally {
+              response.close();
             }
           }
         });
@@ -140,14 +153,19 @@ public class RenderServerApiClient {
 
           @Override
           public void onResponse(Call call, Response response) {
-            if (response.code() == 200) {
-              try (InputStreamReader reader = new InputStreamReader(response.body().byteStream())) {
-                result.complete(gson.fromJson(reader, JsonObject.class));
-              } catch (IOException e) {
-                result.completeExceptionally(e);
+            try {
+              if (response.code() == 200) {
+                try (InputStreamReader reader = new InputStreamReader(
+                    response.body().byteStream())) {
+                  result.complete(gson.fromJson(reader, JsonObject.class));
+                } catch (IOException e) {
+                  result.completeExceptionally(e);
+                }
+              } else {
+                result.completeExceptionally(new IOException("The scene could not be downloaded"));
               }
-            } else {
-              result.completeExceptionally(new IOException("The scene could not be downloaded"));
+            } finally {
+              response.close();
             }
           }
         });
