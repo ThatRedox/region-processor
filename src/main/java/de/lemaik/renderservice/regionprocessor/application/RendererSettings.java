@@ -28,6 +28,7 @@ public class RendererSettings {
 
   private Integer threads;
   private File jobPath;
+  private File texturepacksPath;
   private Integer maxUploadRate;
   private String masterApiUrl;
   private File cacheDirectory;
@@ -36,11 +37,12 @@ public class RendererSettings {
   private final String apiKey;
 
   public RendererSettings(Integer threads,
-      File jobPath, Integer maxUploadRate,
+      File jobPath, File texturepacksPath, Integer maxUploadRate,
       String masterApiUrl, File cacheDirectory, Long maxCacheSize,
       String name, String apiKey) {
     this.threads = threads;
     this.jobPath = jobPath;
+    this.texturepacksPath = texturepacksPath;
     this.maxUploadRate = maxUploadRate;
     this.masterApiUrl = masterApiUrl;
     this.cacheDirectory = cacheDirectory;
@@ -55,6 +57,10 @@ public class RendererSettings {
 
   public Optional<File> getJobPath() {
     return Optional.ofNullable(jobPath);
+  }
+
+  public Optional<File> getTexturepacksPath() {
+    return Optional.ofNullable(texturepacksPath);
   }
 
   public Optional<Integer> getMaxUploadRate() {

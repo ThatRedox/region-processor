@@ -18,31 +18,42 @@
 
 package de.lemaik.renderservice.regionprocessor.application;
 
+import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapper;
 import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapperFactory;
 import de.lemaik.renderservice.regionprocessor.chunky.EmbeddedChunkyWrapper;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderServerApiClient;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderServiceInfo;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderWorker;
+import de.lemaik.renderservice.regionprocessor.util.MinecraftDownloader;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import se.llbit.chunky.PersistentSettings;
 
 public abstract class RendererApplication {
 
-  private static final int VERSION = 2;
+  private static final int VERSION = 3;
+  private static final String TEXTURE_VERSION = "1.16.4";
   private static final Logger LOGGER = LogManager.getLogger(RendererApplication.class);
 
   private final RenderServerApiClient api;
   private final RendererSettings settings;
   private Path jobDirectory;
+  private Path texturepacksDirectory;
   private ChunkyWrapperFactory chunkyWrapperFactory;
 
   private RenderWorker worker;
   private UUID id = UUID.randomUUID();
+  private File texturepackPath;
 
   public RendererApplication(RendererSettings settings) {
     this.settings = settings;
@@ -72,6 +83,24 @@ public abstract class RendererApplication {
       return;
     }
 
+    try (Response response = MinecraftDownloader.downloadMinecraft(TEXTURE_VERSION).get()) {
+      texturepackPath = File.createTempFile("minecraft", ".jar");
+      LOGGER.info(
+          "Downloading Minecraft " + TEXTURE_VERSION + " to " + texturepackPath.getAbsolutePath());
+
+      try (
+          ResponseBody body = response.body();
+          BufferedSink sink = Okio.buffer(Okio.sink(texturepackPath))
+      ) {
+        sink.writeAll(body.source());
+      }
+    } catch (Exception e) {
+      LOGGER.error("Could not download assets", e);
+      System.exit(-1);
+      return;
+    }
+    LOGGER.info("Finished downloading");
+
     if (getSettings().getJobPath().isPresent()) {
       jobDirectory = getSettings().getJobPath().get().toPath();
     } else {
@@ -80,7 +109,25 @@ public abstract class RendererApplication {
     }
     jobDirectory.toFile().mkdirs();
 
-    chunkyWrapperFactory = EmbeddedChunkyWrapper::new;
+    Path chunkyHome = Paths.get(System.getProperty("user.dir"), "rs_chunky");
+    chunkyHome.toFile().mkdirs();
+    PersistentSettings.changeSettingsDirectory(chunkyHome.toFile());
+    PersistentSettings.setDisableDefaultTextures(true);
+    LOGGER.info("Chunky home set to " + chunkyHome);
+
+    if (getSettings().getTexturepacksPath().isPresent()) {
+      texturepacksDirectory = getSettings().getTexturepacksPath().get().toPath();
+    } else {
+      texturepacksDirectory = Paths.get(System.getProperty("user.dir"), "rs_texturepacks");
+      LOGGER.warn("No texturepacks path specified, using " + texturepacksDirectory.toString());
+    }
+    texturepacksDirectory.toFile().mkdirs();
+
+    chunkyWrapperFactory = () -> {
+      ChunkyWrapper chunky = new EmbeddedChunkyWrapper();
+      chunky.setDefaultTexturepack(texturepackPath);
+      return chunky;
+    };
 
     // Construct the proper queue url with username and password from the api key
     // (username is the first 8 characters of the api key)
@@ -97,7 +144,8 @@ public abstract class RendererApplication {
     }
 
     worker = new RenderWorker(queueUri.toString(), getSettings().getName().orElse(null),
-        getSettings().getThreads().orElse(2), jobDirectory, chunkyWrapperFactory, api);
+        getSettings().getThreads().orElse(2), jobDirectory, texturepacksDirectory,
+        chunkyWrapperFactory, api);
     worker.start();
   }
 

@@ -45,14 +45,16 @@ public class AssignmentWorker implements Runnable {
   private final QueueingConsumer.Delivery delivery;
   private final Channel channel;
   private final Path workingDir;
+  private final Path texturepacksDir;
   private final ChunkyWrapper chunky;
   private final RenderServerApiClient apiClient;
 
   public AssignmentWorker(QueueingConsumer.Delivery delivery, Channel channel, Path workingDir,
-      ChunkyWrapper chunky, RenderServerApiClient apiClient) {
+      Path texturepacksDir, ChunkyWrapper chunky, RenderServerApiClient apiClient) {
     this.delivery = delivery;
     this.channel = channel;
     this.workingDir = workingDir;
+    this.texturepacksDir = texturepacksDir;
     this.chunky = chunky;
     this.apiClient = apiClient;
   }
@@ -105,9 +107,18 @@ public class AssignmentWorker implements Runnable {
           )
       ).get(4, TimeUnit.HOURS); // timeout after 4 hours of downloading
 
+      File texturepack = null;
+      if (job.getTexturepack() != null) {
+        texturepack = new File(texturepacksDir.toFile(), job.getTexturepack() + ".zip");
+        if (!texturepack.isFile()) {
+          LOGGER.info("Downloading texturepack...");
+          apiClient.downloadResourcepack(job.getTexturepack(), texturepack).get(4, TimeUnit.HOURS);
+        }
+      }
+
       LOGGER.info("Generating octree...");
       BinarySceneData data = chunky
-          .generateOctree(new File(workingDir.toFile(), "scene.json"), workingDir.toFile(), 0);
+          .generateOctree(new File(workingDir.toFile(), "scene.json"), workingDir.toFile(), 0, texturepack);
 
       LOGGER.info("Uploading...");
       apiClient.uploadSceneData(job.getId(), data, new TaskTracker(ProgressListener.NONE)).get();

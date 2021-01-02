@@ -62,7 +62,6 @@ public interface ChunkyWrapper {
 
   void setDefaultTexturepack(File texturepackPath);
 
-  BinarySceneData generateOctree(File scene, File worldDirectory) throws IOException;
-
-  BinarySceneData generateOctree(File scene, File worldDirectory, int dimension) throws IOException;
+  BinarySceneData generateOctree(File scene, File worldDirectory, int dimension, File texturepack)
+      throws IOException;
 }

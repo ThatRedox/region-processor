@@ -25,8 +25,6 @@ import de.lemaik.renderservice.regionprocessor.chunky.BinarySceneData;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import okhttp3.Cache;
@@ -38,6 +36,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import se.llbit.util.TaskTracker;
@@ -156,29 +155,20 @@ public class RenderServerApiClient {
     return result;
   }
 
-  public CompletableFuture downloadFoliage(Job job, File file) {
-    return downloadFile(job.getFoliageUrl().get(), file);
+  public CompletableFuture downloadResourcepack(String name, File file) {
+    return downloadFileImpl(baseUrl + "/resourcepacks/" + name, file);
   }
 
-  public CompletableFuture downloadGrass(Job job, File file) {
-    return downloadFile(job.getGrassUrl().get(), file);
+  public CompletableFuture downloadFile(String relativeUrl, File file) {
+    return downloadFileImpl(baseUrl + relativeUrl, file);
   }
 
-  public CompletableFuture downloadOctree(Job job, File file) {
-    return downloadFile(job.getOctreeUrl(), file);
-  }
-
-  public CompletableFuture downloadEmittergrid(Job job, File file) {
-    Optional<String> url = job.getEmittergridUrl();
-    return url.map(s -> downloadFile(s, file))
-        .orElseGet(() -> CompletableFuture.completedFuture(null));
-  }
-
-  public CompletableFuture<File> downloadSkymapTo(String url, Path targetDir) {
+  private CompletableFuture downloadFileImpl(String url, File file) {
+    File tmpFile = new File(file.getAbsolutePath() + ".tmp");
     CompletableFuture<File> result = new CompletableFuture<>();
 
     client.newCall(new Request.Builder()
-        .url(baseUrl + url).get().build())
+        .url(url).get().build())
         .enqueue(new Callback() {
           @Override
           public void onFailure(Call call, IOException e) {
@@ -188,47 +178,32 @@ public class RenderServerApiClient {
           @Override
           public void onResponse(Call call, Response response) {
             if (response.code() == 200) {
-              File file = new File(targetDir.toFile(), response.header("X-Filename"));
-
-              try (BufferedSink sink = Okio.buffer(Okio.sink(file))) {
-                sink.writeAll(response.body().source());
+              try (
+                  ResponseBody body = response.body();
+                  BufferedSink sink = Okio.buffer(Okio.sink(tmpFile))
+              ) {
+                sink.writeAll(body.source());
+              } catch (IOException e) {
+                if (tmpFile.exists()) {
+                  tmpFile.delete();
+                }
+                result.completeExceptionally(e);
+                return;
+              }
+              try {
+                if (!tmpFile.renameTo(file)) {
+                  throw new IOException("Could not rename file " + tmpFile + " to " + file);
+                }
                 result.complete(file);
               } catch (IOException e) {
+                if (tmpFile.exists()) {
+                  tmpFile.delete();
+                }
                 result.completeExceptionally(e);
               }
             } else {
               result.completeExceptionally(new IOException("Download of " + url + " failed"));
             }
-          }
-        });
-
-    return result;
-  }
-
-  public CompletableFuture<File> downloadFile(String url, File file) {
-    CompletableFuture<File> result = new CompletableFuture<>();
-
-    client.newCall(new Request.Builder()
-        .url(baseUrl + url).get().build())
-        .enqueue(new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
-            result.completeExceptionally(e);
-          }
-
-          @Override
-          public void onResponse(Call call, Response response) {
-            if (response.code() == 200) {
-              try (BufferedSink sink = Okio.buffer(Okio.sink(file))) {
-                sink.writeAll(response.body().source());
-                result.complete(file);
-              } catch (IOException e) {
-                result.completeExceptionally(e);
-              }
-            } else {
-              result.completeExceptionally(new IOException("Download of " + url + " failed"));
-            }
-            response.close();
           }
         });
 

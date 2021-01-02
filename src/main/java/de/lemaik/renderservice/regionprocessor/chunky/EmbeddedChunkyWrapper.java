@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import se.llbit.chunky.renderer.RenderManager;
 import se.llbit.chunky.renderer.scene.SynchronousSceneManager;
+import se.llbit.chunky.resources.TexturePackLoader;
 import se.llbit.util.ProgressListener;
 import se.llbit.util.TaskTracker;
 
@@ -16,27 +17,27 @@ public class EmbeddedChunkyWrapper implements ChunkyWrapper {
   private File previousTexturepack;
 
   @Override
-  public BinarySceneData generateOctree(File scene, File worldDirectory)
+  public BinarySceneData generateOctree(File scene, File worldDirectory, int dimension,
+      File texturepack)
       throws IOException {
-    context.setRenderThreadCount(1);
-    RenderManager renderer = new RenderManager(context, true);
-    renderer.setCPULoad(100);
+    if (texturepack == null) {
+      texturepack = defaultTexturepack;
+    }
 
-    SynchronousSceneManager sceneManager = new SynchronousSceneManager(context, renderer);
-    context.setSceneDirectory(scene.getParentFile());
-    sceneManager.getScene().loadDescription(new FileInputStream(scene));
+    // all chunky instances share their texturepacks statically
+    if (!texturepack.equals(previousTexturepack)) {
+      if (texturepack.equals(defaultTexturepack)) {
+        TexturePackLoader
+            .loadTexturePacks(new String[]{defaultTexturepack.getAbsolutePath()}, false);
+      } else {
+        // load the selected texturepack and the default texturepack as fallback
+        TexturePackLoader.loadTexturePacks(
+            new String[]{texturepack.getAbsolutePath(), defaultTexturepack.getAbsolutePath()},
+            false);
+      }
+      previousTexturepack = texturepack;
+    }
 
-    sceneManager.getScene().loadChunks(new TaskTracker(ProgressListener.NONE),
-        new UnlockedWorld(worldDirectory, SceneUtils.getDimension(sceneManager.getScene())),
-        new HashSet<>(sceneManager.getScene().getChunks()));
-
-    sceneManager.getScene().saveScene(context, new TaskTracker(ProgressListener.NONE));
-    return new BinarySceneData(context.getOctree(), context.getEmittergrid());
-  }
-
-  @Override
-  public BinarySceneData generateOctree(File scene, File worldDirectory, int dimension)
-      throws IOException {
     context.setRenderThreadCount(1);
     RenderManager renderer = new RenderManager(context, true);
     renderer.setCPULoad(100);

@@ -42,6 +42,11 @@ public interface CommandlineArguments {
       defaultToNull = true)
   File getJobPath();
 
+  @Option(longName = "texturepacks-path",
+      description = "path for texturepacks",
+      defaultToNull = true)
+  File getTexturepacksPath();
+
   @Option(longName = "upload-rate",
       description = "maximum upload rate in KB/s",
       defaultToNull = true)
