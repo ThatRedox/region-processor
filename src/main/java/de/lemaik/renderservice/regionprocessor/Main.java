@@ -29,6 +29,7 @@ import java.util.Optional;
  * The main class.
  */
 public class Main {
+  public static final String VERSION = Main.class.getPackage().getImplementationVersion();
 
   private Main() {
   }

@@ -22,6 +22,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import de.lemaik.renderservice.regionprocessor.Main;
 import de.lemaik.renderservice.regionprocessor.chunky.ChunkyWrapperFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -71,6 +72,8 @@ public class RenderWorker extends Thread {
     if (name != null) {
       connectionProps.put("x-rs-name", name);
     }
+    connectionProps.put("x-threads", threads);
+    connectionProps.put("x-version", Main.VERSION);
     factory.setClientProperties(connectionProps);
   }
 

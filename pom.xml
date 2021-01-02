@@ -119,6 +119,7 @@
                     <archive>
                         <manifest>
                             <mainClass>de.lemaik.renderservice.regionprocessor.Main</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                     <descriptorRefs>

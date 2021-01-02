@@ -20,6 +20,7 @@ package de.lemaik.renderservice.regionprocessor.rendering;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import de.lemaik.renderservice.regionprocessor.Main;
 import de.lemaik.renderservice.regionprocessor.chunky.BinarySceneData;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +56,8 @@ public class RenderServerApiClient {
         .cache(new Cache(cacheDirectory, maxCacheSize * 1024 * 1024))
         .addInterceptor(chain -> chain.proceed(
             chain.request().newBuilder()
+                .header("User-Agent",
+                    "ChunkyCloud Region Processing Node v" + Main.VERSION)
                 .header("X-Api-Key", apiKey)
                 .build()))
         .build();
