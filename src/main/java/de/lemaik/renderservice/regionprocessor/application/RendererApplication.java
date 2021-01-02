@@ -144,8 +144,7 @@ public abstract class RendererApplication {
     }
 
     worker = new RenderWorker(queueUri.toString(), getSettings().getName().orElse(null),
-        getSettings().getThreads().orElse(2), jobDirectory, texturepacksDirectory,
-        chunkyWrapperFactory, api);
+        jobDirectory, texturepacksDirectory, chunkyWrapperFactory, api);
     worker.start();
   }
 

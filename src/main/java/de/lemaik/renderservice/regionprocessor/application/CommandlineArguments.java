@@ -26,17 +26,6 @@ import java.io.File;
  */
 public interface CommandlineArguments {
 
-  @Option(longName = "headless",
-      description = "Run without GUI",
-      defaultValue = "false")
-  boolean getHeadless();
-
-  @Option(shortName = "t",
-      longName = "thread-count",
-      description = "Number of dump processing threads",
-      defaultValue = "2")
-  int getThreads();
-
   @Option(longName = "job-path",
       description = "path for temporary job data",
       defaultToNull = true)

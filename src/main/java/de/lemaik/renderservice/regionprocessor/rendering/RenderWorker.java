@@ -44,7 +44,6 @@ public class RenderWorker extends Thread {
 
   private static final Logger LOGGER = LogManager.getLogger(RenderWorker.class);
   private final ExecutorService executorService;
-  private final int threads;
   private final Path jobDirectory;
   private final Path texturepacksDirectory;
   private final ChunkyWrapperFactory chunkyFactory;
@@ -55,11 +54,10 @@ public class RenderWorker extends Thread {
   private Connection conn;
   private Channel channel;
 
-  public RenderWorker(String uri, String name, int threads, Path jobDirectory,
-      Path texturepacksDirectory, ChunkyWrapperFactory chunkyFactory,
+  public RenderWorker(String uri, String name, Path jobDirectory, Path texturepacksDirectory,
+      ChunkyWrapperFactory chunkyFactory,
       RenderServerApiClient apiClient) {
-    executorService = Executors.newFixedThreadPool(threads);
-    this.threads = threads;
+    executorService = Executors.newFixedThreadPool(1);
     this.jobDirectory = jobDirectory;
     this.texturepacksDirectory = texturepacksDirectory;
     this.chunkyFactory = chunkyFactory;
@@ -75,7 +73,6 @@ public class RenderWorker extends Thread {
     if (name != null) {
       connectionProps.put("x-rs-name", name);
     }
-    connectionProps.put("x-threads", threads);
     connectionProps.put("x-version", Main.VERSION);
     factory.setClientProperties(connectionProps);
   }
@@ -90,7 +87,7 @@ public class RenderWorker extends Thread {
         nextRestartDelaySeconds = 1;
 
         QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicQos(this.threads, false);
+        channel.basicQos(1, false);
         channel.basicConsume("rs_prepare", false, consumer);
 
         while (!interrupted() && channel.isOpen()) {
