@@ -47,8 +47,10 @@ public class EmbeddedChunkyWrapper implements ChunkyWrapper {
     SynchronousSceneManager sceneManager = new SynchronousSceneManager(context, renderer);
     context.setSceneDirectory(scene.getParentFile());
     sceneManager.getScene().loadDescription(new FileInputStream(scene));
+    sceneManager.getScene().yClipMin = 0;
+    sceneManager.getScene().yClipMax = 256;
 
-    sceneManager.getScene().loadChunks(new TaskTracker(ProgressListener.NONE),
+    sceneManager.getScene().loadChunks(TaskTracker.NONE,
         new UnlockedWorld(worldDirectory, dimension),
         new HashSet<>(sceneManager.getScene().getChunks()));
 
