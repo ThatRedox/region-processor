@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
+
+import se.llbit.chunky.renderer.DefaultRenderManager;
 import se.llbit.chunky.renderer.RenderManager;
 import se.llbit.chunky.renderer.scene.SynchronousSceneManager;
 import se.llbit.chunky.resources.TexturePackLoader;
@@ -39,14 +41,16 @@ public class EmbeddedChunkyWrapper implements ChunkyWrapper {
     }
 
     context.setRenderThreadCount(1);
-    RenderManager renderer = new RenderManager(context, true);
+    RenderManager renderer = new DefaultRenderManager(context, true);
     renderer.setCPULoad(100);
 
     SynchronousSceneManager sceneManager = new SynchronousSceneManager(context, renderer);
     context.setSceneDirectory(scene.getParentFile());
     sceneManager.getScene().loadDescription(new FileInputStream(scene));
+    sceneManager.getScene().yClipMin = 0;
+    sceneManager.getScene().yClipMax = 256;
 
-    sceneManager.getScene().loadChunks(new TaskTracker(ProgressListener.NONE),
+    sceneManager.getScene().loadChunks(TaskTracker.NONE,
         new UnlockedWorld(worldDirectory, dimension),
         new HashSet<>(sceneManager.getScene().getChunks()));
 
