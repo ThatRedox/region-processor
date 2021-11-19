@@ -195,32 +195,36 @@ public class RenderServerApiClient {
 
           @Override
           public void onResponse(Call call, Response response) {
-            if (response.code() == 200) {
-              try (
-                  ResponseBody body = response.body();
-                  BufferedSink sink = Okio.buffer(Okio.sink(tmpFile))
-              ) {
-                sink.writeAll(body.source());
-              } catch (IOException e) {
-                if (tmpFile.exists()) {
-                  tmpFile.delete();
+            try {
+              if (response.code() == 200) {
+                try (
+                    ResponseBody body = response.body();
+                    BufferedSink sink = Okio.buffer(Okio.sink(tmpFile))
+                ) {
+                  sink.writeAll(body.source());
+                } catch (IOException e) {
+                  if (tmpFile.exists()) {
+                    tmpFile.delete();
+                  }
+                  result.completeExceptionally(e);
+                  return;
                 }
-                result.completeExceptionally(e);
-                return;
+                try {
+                  if (!tmpFile.renameTo(file)) {
+                    throw new IOException("Could not rename file " + tmpFile + " to " + file);
+                  }
+                  result.complete(file);
+                } catch (IOException e) {
+                  if (tmpFile.exists()) {
+                    tmpFile.delete();
+                  }
+                  result.completeExceptionally(e);
+                }
+              } else {
+                result.completeExceptionally(new IOException("Download of " + url + " failed"));
               }
-              try {
-                if (!tmpFile.renameTo(file)) {
-                  throw new IOException("Could not rename file " + tmpFile + " to " + file);
-                }
-                result.complete(file);
-              } catch (IOException e) {
-                if (tmpFile.exists()) {
-                  tmpFile.delete();
-                }
-                result.completeExceptionally(e);
-              }
-            } else {
-              result.completeExceptionally(new IOException("Download of " + url + " failed"));
+            } finally {
+              response.close();
             }
           }
         });
