@@ -43,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 public class RenderWorker extends Thread {
 
   private static final Logger LOGGER = LogManager.getLogger(RenderWorker.class);
+  private static final String QUEUE_NAME = "rs_prepare_241";
   private final ExecutorService executorService;
   private final Path jobDirectory;
   private final Path texturepacksDirectory;
@@ -88,7 +89,7 @@ public class RenderWorker extends Thread {
 
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicQos(1, false);
-        channel.basicConsume("rs_prepare", false, consumer);
+        channel.basicConsume(QUEUE_NAME, false, consumer);
 
         while (!interrupted() && channel.isOpen()) {
           try {
