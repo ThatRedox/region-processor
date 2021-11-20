@@ -55,6 +55,13 @@ public class Main {
       return;
     }
 
+    String apiKey = Optional.ofNullable(arguments.getApiKey()).orElse(System.getenv("API_KEY"));
+    if (apiKey == null) {
+      System.err.println(
+          "Missing API key. Use the --api-key option or the API_KEY environment variable to specify one.");
+      System.exit(-1);
+    }
+
     RendererSettings settings = new RendererSettings(
         arguments.getJobPath(),
         arguments.getTexturepacksPath(),
@@ -63,8 +70,9 @@ public class Main {
         arguments.getCacheDirectory(),
         arguments.getMaxCacheSize(),
         arguments.getName(),
-        Optional.ofNullable(arguments.getApiKey()).orElse(System.getenv("API_KEY"))
+        apiKey
     );
+
     new HeadlessRenderer(settings).start();
   }
 }
