@@ -111,7 +111,6 @@ public abstract class RendererApplication {
 
     Path chunkyHome = Paths.get(System.getProperty("user.dir"), "rs_chunky");
     chunkyHome.toFile().mkdirs();
-    LOGGER.info("You can ignore the next warning about Chunky not being able to load the settings");
     PersistentSettings.changeSettingsDirectory(chunkyHome.toFile());
     PersistentSettings.setDisableDefaultTextures(true);
     LOGGER.info("Chunky home set to " + chunkyHome);
