@@ -32,14 +32,16 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import se.llbit.util.ProgressListener;
 import se.llbit.util.TaskTracker;
 
 public class AssignmentWorker implements Runnable {
 
-  private static final Logger LOGGER = LogManager.getLogger(AssignmentWorker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AssignmentWorker.class);
   private static final Gson gson = new Gson();
 
   private final QueueingConsumer.Delivery delivery;

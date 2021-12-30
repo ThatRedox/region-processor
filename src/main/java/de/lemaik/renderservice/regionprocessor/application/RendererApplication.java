@@ -25,25 +25,29 @@ import de.lemaik.renderservice.regionprocessor.rendering.RenderServerApiClient;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderServiceInfo;
 import de.lemaik.renderservice.regionprocessor.rendering.RenderWorker;
 import de.lemaik.renderservice.regionprocessor.util.MinecraftDownloader;
+
+import se.llbit.chunky.PersistentSettings;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import se.llbit.chunky.PersistentSettings;
 
 public abstract class RendererApplication {
 
   private static final int VERSION = 3;
   private static final String TEXTURE_VERSION = "1.17.1";
-  private static final Logger LOGGER = LogManager.getLogger(RendererApplication.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RendererApplication.class);
 
   private final RenderServerApiClient api;
   private final RendererSettings settings;
